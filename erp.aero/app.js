@@ -8,6 +8,7 @@ export function app() {
   f.register(import('@fastify/sensible'))
 
   f.register(import('./auth.js'))
+  f.register(import('./routes.js'))
 
   f.decorate('sql', postgres({
     database: 'erp_aero',

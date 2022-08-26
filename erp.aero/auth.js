@@ -22,8 +22,8 @@ export default async f => {
           sameSite: true,
         })
         .send({ accessToken: createAccessToken(id) })
-    } catch (err) {
-      res.badRequest(err.message)
+    } catch (e) {
+      res.badRequest(e.message)
     }
   })
 }
