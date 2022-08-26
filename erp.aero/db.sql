@@ -7,5 +7,6 @@ drop table if exists users cascade;
 
 create table users (
   id text unique not null,
-  password text not null
+  password text not null,
+  refresh_token text
 );
