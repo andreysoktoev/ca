@@ -11,6 +11,7 @@ export default async f => {
   })
 
   f.get('/info', async (req, res) => {
-    res.send({ id: req.user.id })
+    const { id } = req.user
+    res.send({ id })
   })
 }
