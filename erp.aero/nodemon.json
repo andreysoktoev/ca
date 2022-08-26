@@ -1,0 +1,7 @@
+{
+  "events": {
+    "restart": "clear",
+    "start": "clear",
+    "quit": "clear"
+  }
+}
