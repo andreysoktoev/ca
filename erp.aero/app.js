@@ -5,6 +5,11 @@ export function app() {
   const f = fastify()
 
   f.register(import('@fastify/cookie'))
+  f.register(import('@fastify/cors'), {
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: true,
+  })
+
   f.register(import('@fastify/sensible'))
 
   f.register(import('./auth.js'))
