@@ -9,24 +9,46 @@ const verifyRefreshToken = createVerifier({ key: 'refresh' })
 export const verifyAccessToken = createVerifier({ key: 'access' })
 
 export default async f => {
-  const { sql } = f
+  const { redis, sql } = f
+
+  f.get('/logout', async (req, res) => {
+    try {
+      const token = req?.headers?.authorization?.split(' ')[1]
+      const { id } = verifyAccessToken(token)
+      const [user] = await sql`select access_token from users where id = ${id}`
+      if (!user || token !== user.access_token) res.unauthorized('Invalid token')
+      const access_token = createAccessToken(id)
+      const refresh_token = createRefreshToken(id)
+      await sql`update users set ${sql({ access_token, refresh_token })} where id = ${id}`
+      res
+        .setCookie('refreshToken', refresh_token, {
+          expires: new Date(Date.now() + REFRESH_TOKEN_TTL),
+          httpOnly: true,
+          path: '/signin/new_token',
+          sameSite: true,
+        })
+        .send({ access_token })
+    } catch (e) {
+      res.unauthorized(e.message)
+    }
+  })
 
   f.post('/signin', async (req, res) => {
     try {
       const { id, password } = req.body
       const [user] = await sql`select password from users where id = ${id}`
       if (!user || password !== user.password) res.unauthorized('Invalid credentials')
-      const accessToken = createAccessToken(id)
-      const refreshToken = createRefreshToken(id)
-      await sql`update users set refresh_token = ${refreshToken} where id = ${id}`
+      const access_token = createAccessToken(id)
+      const refresh_token = createRefreshToken(id)
+      await sql`update users set ${sql({ access_token, refresh_token })} where id = ${id}`
       res
-        .setCookie('refreshToken', refreshToken, {
+        .setCookie('refreshToken', refresh_token, {
           expires: new Date(Date.now() + REFRESH_TOKEN_TTL),
           httpOnly: true,
           path: '/signin/new_token',
           sameSite: true,
         })
-        .send({ accessToken })
+        .send({ access_token })
       } catch (e) {
       res.unauthorized(e.message)
     }
@@ -35,17 +57,17 @@ export default async f => {
   f.post('/signup', async (req, res) => {
     try {
       const { id, password } = req.body
-      const accessToken = createAccessToken(id)
-      const refreshToken = createRefreshToken(id)
-      await sql`insert into users ${sql({ id, password, refresh_token: refreshToken })}`
+      const access_token = createAccessToken(id)
+      const refresh_token = createRefreshToken(id)
+      await sql`insert into users ${sql({ id, password, access_token, refresh_token })}`
       res
-        .setCookie('refreshToken', refreshToken, {
+        .setCookie('refreshToken', refresh_token, {
           expires: new Date(Date.now() + REFRESH_TOKEN_TTL),
           httpOnly: true,
           path: '/signin/new_token',
           sameSite: true,
         })
-        .send({ accessToken })
+        .send({ access_token })
     } catch (e) {
       res.conflict(e.message)
     }
