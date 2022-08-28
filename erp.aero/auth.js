@@ -1,6 +1,6 @@
 import { createSigner, createVerifier } from 'fast-jwt'
 
-const ACCESS_TOKEN_TTL = 1000 * 60 * 10
+const ACCESS_TOKEN_TTL = 1000 * 60 * 60
 const REFRESH_TOKEN_TTL = 1000 * 60 * 60 * 24 * 7
 
 const createAccessToken = (id) => createSigner({ expiresIn: ACCESS_TOKEN_TTL, key: 'access' })({ id })

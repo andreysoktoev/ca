@@ -3,6 +3,8 @@ import { verifyAccessToken } from './auth.js'
 export default async f => {
   const { sql } = f
 
+  f.register(import('./files.js'))
+
   f.addHook('onRequest', async (req, res) => {
     try {
       const token = req?.headers?.authorization?.split(' ')[1]
