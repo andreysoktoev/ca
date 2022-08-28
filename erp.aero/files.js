@@ -27,6 +27,25 @@ export default async f => {
     })}`
   })
 
+  f.put('/file/update/:id', async (req, res) => {
+    const { id } = req.params
+    const [old] = await sql`select * from files where id = ${id}`
+    await fs.unlink(PATH_TO_FOLDER + old.name + old.extension)
+    const data = await req.file()
+    const { file, filename, mimetype } = data
+    const { name, ext } = path.parse(filename)
+    const pathToFile = PATH_TO_FOLDER + filename
+    await pump(file, fsSync.createWriteStream(pathToFile))
+    const { size } = await fs.stat(pathToFile)
+    await sql`update files set ${sql({
+      name,
+      extension: ext,
+      mime: mimetype,
+      size,
+      date: Date.now()
+    })} where id = ${id}`
+  })
+
   f.delete('/file/:id', async (req, res) => {
     try {
       const { id } = req.params
