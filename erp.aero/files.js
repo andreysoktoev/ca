@@ -46,6 +46,13 @@ export default async f => {
     })} where id = ${id}`
   })
 
+  f.get('/file/download/:id', async (req, res) => {
+    const { id } = req.params
+    const [{ name, extension, mime }] = await sql`select * from files where id = ${id}`
+    const file = await fs.readFile(PATH_TO_FOLDER + name + extension)
+    res.type(mime).send(file)
+  })
+
   f.delete('/file/:id', async (req, res) => {
     try {
       const { id } = req.params
