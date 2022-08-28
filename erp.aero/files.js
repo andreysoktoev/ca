@@ -47,4 +47,13 @@ export default async f => {
       res.badRequest(e.message)
     }
   })
+
+  f.get('/file/list', async (req, res) => {
+    try {
+      const files = await sql`table files`
+      res.send(files)
+    } catch (e) {
+      res.badRequest(e.message)
+    }
+  })
 }
