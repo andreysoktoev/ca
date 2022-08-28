@@ -76,7 +76,10 @@ export default async f => {
 
   f.get('/file/list', async (req, res) => {
     try {
-      const files = await sql`table files`
+      let { list_size, page } = req.query
+      if (!list_size) list_size = 10
+      if (!page) page = 1
+      const files = await sql`table files limit ${list_size} offset ${page - 1}`
       res.send(files)
     } catch (e) {
       res.badRequest(e.message)
