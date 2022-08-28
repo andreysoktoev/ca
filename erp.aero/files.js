@@ -1,29 +1,40 @@
-import fs from 'fs'
+import fsSync from 'fs'
+import fs from 'fs/promises'
 import path from 'path'
 import { pipeline } from 'stream'
 import util from 'util'
 
-const pump = util.promisify(pipeline)
-
 export default async f => {
   const { sql } = f
+  const PATH_TO_FOLDER = './bucket/'
+  const pump = util.promisify(pipeline)
+
   f.register(import('@fastify/multipart'))
 
   f.post('/file/upload', async (req, res) => {
     const data = await req.file()
     const { file, filename, mimetype } = data
     const { name, ext } = path.parse(filename)
-    const pathToFile = './bucket/' + filename
-    await pump(file, fs.createWriteStream(pathToFile))
-    const { size } = fs.statSync(pathToFile)
-    const row = {
+    const pathToFile = PATH_TO_FOLDER + filename
+    await pump(file, fsSync.createWriteStream(pathToFile))
+    const { size } = await fs.stat(pathToFile)
+    await sql`insert into files ${sql({
       name,
       extension: ext,
       mime: mimetype,
       size,
       date: Date.now()
+    })}`
+  })
+
+  f.delete('/file/:id', async (req, res) => {
+    try {
+      const { id } = req.params
+      const [{ name, extension }] = await sql`select * from files where id = ${id}`
+      await fs.unlink(PATH_TO_FOLDER + name + extension)
+      await sql`delete from files where id = ${id}`
+    } catch (e) {
+      res.badRequest(e.message)
     }
-    await sql`insert into files ${sql(row)}`
-    res.send(row)
   })
 }
