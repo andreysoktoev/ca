@@ -37,4 +37,14 @@ export default async f => {
       res.badRequest(e.message)
     }
   })
+
+  f.get('/file/:id', async (req, res) => {
+    try {
+      const { id } = req.params
+      const [file] = await sql`select * from files where id = ${id}`
+      res.send(file)
+    } catch (e) {
+      res.badRequest(e.message)
+    }
+  })
 }
