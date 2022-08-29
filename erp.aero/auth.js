@@ -54,6 +54,27 @@ export default async f => {
     }
   })
 
+  f.post('/signin/new_token', async (req, res) => {
+    try {
+      const { id } = verifyRefreshToken(req.cookies.refreshToken)
+      const [user] = await sql`select id from users where id = ${id}`
+      if (!user) res.unauthorized('Invalid token')
+      const access_token = createAccessToken(id)
+      const refresh_token = createRefreshToken(id)
+      await sql`update users set ${sql({ access_token, refresh_token })} where id = ${id}`
+      res
+        .setCookie('refreshToken', refresh_token, {
+          expires: new Date(Date.now() + REFRESH_TOKEN_TTL),
+          httpOnly: true,
+          path: '/signin/new_token',
+          sameSite: true,
+        })
+        .send({ access_token })
+      } catch (e) {
+      res.unauthorized(e.message)
+    }
+  })
+
   f.post('/signup', async (req, res) => {
     try {
       const { id, password } = req.body
