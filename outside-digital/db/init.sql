@@ -12,7 +12,7 @@ cascade;
 
 create table users (
   uid uuid primary key default gen_random_uuid(),
-  email varchar(100) not null,
+  email varchar(100) unique not null,
   password text not null,
   nickname varchar(30) not null
 );

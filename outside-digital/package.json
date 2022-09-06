@@ -17,8 +17,10 @@
   "dependencies": {
     "@nestjs/common": "^9.0.11",
     "@nestjs/core": "^9.0.11",
+    "@nestjs/mapped-types": "*",
     "@nestjs/platform-fastify": "^9.0.11",
     "dotenv": "^16.0.2",
+    "fast-jwt": "^1.7.1",
     "postgres": "^3.2.4",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
