@@ -26,4 +26,4 @@ module.exports = {
     'semi': ['error', 'never'],
     'template-curly-spacing': ['error', 'never']
   },
-};
+}
