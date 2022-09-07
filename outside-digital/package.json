@@ -20,6 +20,8 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-fastify": "^9.0.11",
     "cache-manager": "^4.1.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
     "dotenv": "^16.0.2",
     "fast-jwt": "^1.7.1",
     "postgres": "^3.2.4",
