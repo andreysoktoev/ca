@@ -1,0 +1,63 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body,
+.grid div,
+.arrows div,
+.center {
+  display: grid;
+  place-items: center;
+}
+
+#root {
+  display: grid;
+  grid-template-columns: 60vmin;
+  grid-template-rows: 60vmin auto auto;
+  row-gap: 4vmin;
+}
+
+.grid {
+  height: 60vmin;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1vmin;
+}
+
+.grid div {
+  background: dimgray;
+  border-radius: 1vmin;
+  font-size: 8vmin;
+}
+
+.grid div:hover {
+  cursor: pointer;
+}
+
+.arrows {
+  font-size: 4vmin;
+  font-weight: bold;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+}
+
+button {
+  font-family: inherit;
+  color: gray;
+  font-size: 8vmin;
+  font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  color: inherit;
+}
+
+button:active {
+  color: green;
+}

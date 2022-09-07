@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "fastify": "^3.25.3",
+    "fastify-rate-limit": "^5.7.0"
+  }
+}
