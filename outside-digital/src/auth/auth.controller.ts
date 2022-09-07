@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Headers, Post } from '@nestjs/common'
 import { CreateUserDto, Credentials } from '../users/dto/create-user.dto.js'
 import { AuthService } from './auth.service.js'
 import { Token } from './entities/auth.entity.js'
@@ -10,6 +10,11 @@ export class AuthController {
   @Post('signin')
   signIn(@Body() data: Credentials): Promise<Token> {
     return this.auth.signIn(data)
+  }
+
+  @Post('signout')
+  signOut(@Headers('authorization') authorization: string): Promise<boolean> {
+    return this.auth.signOut(authorization)
   }
 
   @Post('signup')
