@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { sql } from '../db/sql.js'
 import { CreateUserDto, Credentials } from './dto/create-user.dto.js'
 import { User } from './entities/user.entity.js'
@@ -35,6 +35,15 @@ export class UsersService {
       return user
     } catch (e) {
       throw new UnauthorizedException(e.message)
+    }
+  }
+
+  async get(req: any): Promise<User> {
+    try {
+      const [user] = await sql`select uid, email, nickname from users where uid = ${req.user.uid}`
+      return user
+    } catch (e) {
+      throw new NotFoundException()
     }
   }
 }

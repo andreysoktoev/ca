@@ -1,5 +1,6 @@
 import { CACHE_MANAGER, Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { Cache } from 'cache-manager'
+import 'dotenv/config'
 import { createDecoder, createSigner } from 'fast-jwt'
 import { CreateUserDto, Credentials } from '../users/dto/create-user.dto.js'
 import { UsersService } from '../users/users.service.js'
@@ -13,12 +14,12 @@ export class AuthService {
   ) {}
 
   async createToken(uid: string): Promise<Token> {
-    const ttl = 1000 * 60 * 30
-    const token = createSigner({ expiresIn: ttl, key: 'access' })({ uid })
-    await this.cache.set(uid, token, { ttl })
+    const TOKEN_TTL = 1000 * 60 * 30
+    const token = createSigner({ expiresIn: TOKEN_TTL, key: process.env.SECRET })({ uid })
+    await this.cache.set(uid, token, { ttl: 1800 })
     return {
       token,
-      expire: ttl
+      expire: TOKEN_TTL
     }
   }
 
