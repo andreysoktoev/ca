@@ -1,17 +1,14 @@
-import { CACHE_MANAGER, Inject, Injectable, UnauthorizedException } from '@nestjs/common'
+import { CACHE_MANAGER, ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { Cache } from 'cache-manager'
 import 'dotenv/config'
 import { createDecoder, createSigner } from 'fast-jwt'
+import { sql } from '../db/sql.js'
 import { CreateUserDto, Credentials } from '../users/dto/create-user.dto.js'
-import { UsersService } from '../users/users.service.js'
 import { Token } from './entities/auth.entity.js'
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @Inject(CACHE_MANAGER) private cache: Cache,
-    private readonly users: UsersService
-  ) {}
+  constructor(@Inject(CACHE_MANAGER) private cache: Cache) {}
 
   async createToken(uid: string): Promise<Token> {
     const TOKEN_TTL = 1000 * 60 * 60 * 24
@@ -24,7 +21,9 @@ export class AuthService {
   }
 
   async signIn(data: Credentials): Promise<Token> {
-    const user = await this.users.findOne(data)
+    const { email, password } = data
+    const [user] = await sql`select * from users where email = ${email}`
+    if (!user || password !== user.password) throw new UnauthorizedException('Invalid credentials')
     return this.createToken(user.uid)
   }
 
@@ -40,7 +39,10 @@ export class AuthService {
   }
 
   async signUp(data: CreateUserDto): Promise<Token> {
-    const user = await this.users.create(data)
-    return this.createToken(user.uid)
+    const { email, nickname } = data
+    const [userExists] = await sql`select * from users where email = ${email} or nickname = ${nickname}`
+    if (userExists) throw new ConflictException('User already exists')
+    const [{ uid }] = await sql`insert into users ${sql(data)} returning uid`
+    return this.createToken(uid)
   }
 }
