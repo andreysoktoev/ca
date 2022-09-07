@@ -14,7 +14,7 @@ export class AuthService {
   ) {}
 
   async createToken(uid: string): Promise<Token> {
-    const TOKEN_TTL = 1000 * 60 * 30
+    const TOKEN_TTL = 1000 * 60 * 60 * 24
     const token = createSigner({ expiresIn: TOKEN_TTL, key: process.env.SECRET })({ uid })
     await this.cache.set(uid, token, { ttl: 1800 })
     return {

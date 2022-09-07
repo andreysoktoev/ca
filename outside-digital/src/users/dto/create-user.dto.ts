@@ -8,3 +8,9 @@ export class Credentials {
   email: string
   password: string
 }
+
+export class UpdateUserDto {
+  email?: string
+  password?: string
+  nickname?: string
+}

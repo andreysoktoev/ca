@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { sql } from '../db/sql.js'
-import { CreateUserDto, Credentials } from './dto/create-user.dto.js'
+import { CreateUserDto, Credentials, UpdateUserDto } from './dto/create-user.dto.js'
 import { User } from './entities/user.entity.js'
 
 @Injectable()
@@ -44,6 +44,15 @@ export class UsersService {
       return user
     } catch (e) {
       throw new NotFoundException()
+    }
+  }
+
+  async update(data: UpdateUserDto, req: any): Promise<User> {
+    try {
+      const [user] = await sql`update users set ${sql(data)} where uid = ${req.user.uid} returning email, nickname`
+      return user
+    } catch (e) {
+      throw new ConflictException(e.message)
     }
   }
 }
