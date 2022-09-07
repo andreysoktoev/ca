@@ -3,3 +3,8 @@ export class CreateUserDto {
   password: string
   nickname: string
 }
+
+export class Credentials {
+  email: string
+  password: string
+}
