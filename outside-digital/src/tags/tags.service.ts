@@ -21,7 +21,8 @@ export class TagsService {
     const length = query?.length
     const offset = query?.offset
     const tags = await sql`
-      select * from tag_user
+      select creator, name, sort_order
+      from tag_user
       order by
         case when ${sortByOrder === ''} then sort_order end,
         case when ${sortByName === ''} then name end
@@ -39,7 +40,7 @@ export class TagsService {
   }
 
   async findOne(id: number): Promise<Tag> {
-    const [tag] = await sql`select * from tags where id = ${id}`
+    const [tag] = await sql`select creator, name, sort_order from tag_user where id = ${id}`
     return tag
   }
 

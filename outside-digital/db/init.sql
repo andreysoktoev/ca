@@ -47,6 +47,7 @@ cascade;
 
 create view tag_user as
 select
+  id,
   jsonb_build_object('nickname', nickname, 'uid', uid) creator,
   name,
   sort_order
