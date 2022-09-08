@@ -19,8 +19,9 @@ export class TagsService {
     return `This action returns all tags`
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tag`
+  async findOne(id: number): Promise<Tag> {
+    const [tag] = await sql`select * from tags where id = ${id}`
+    return tag
   }
 
   update(id: number, updateTagDto: UpdateTagDto) {
