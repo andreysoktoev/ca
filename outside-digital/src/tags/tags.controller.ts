@@ -26,7 +26,7 @@ export class TagsController {
   }
 
   @Put(':id')
-  update(@Req() req, @Param('id') id: string, @Body() dto: UpdateTagDto): Promise<Tag> {
+  update(@Req() req, @Param('id') id: string, @Body() dto: UpdateTagDto) {
     return this.tags.update(req.user.uid, +id, dto)
   }
 

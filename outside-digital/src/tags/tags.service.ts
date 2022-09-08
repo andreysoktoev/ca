@@ -44,11 +44,12 @@ export class TagsService {
     return tag
   }
 
-  async update(uid: string, id: number, dto: UpdateTagDto): Promise<Tag> {
+  async update(uid: string, id: number, dto: UpdateTagDto) {
     const [oldTag] = await sql`select * from tags where id = ${id}`
     if (!oldTag) throw new NotFoundException()
     if (uid !== oldTag.creator) throw new ForbiddenException()
-    const [newTag] = await sql`update tags set ${sql(dto)} where id = ${id} returning *`
+    await sql`update tags set ${sql(dto)} where id = ${id}`
+    const newTag = await this.findOne(id)
     return newTag
   }
 
