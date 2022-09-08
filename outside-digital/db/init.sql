@@ -19,7 +19,7 @@ create table users (
 
 create table tags (
   id serial,
-  creator uuid unique not null references users on delete cascade on update cascade,
-  name varchar(40) not null,
+  creator uuid not null references users on delete cascade on update cascade,
+  name varchar(40) unique not null,
   sort_order int not null default 0
 );
