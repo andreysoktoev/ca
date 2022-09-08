@@ -53,7 +53,10 @@ export class TagsService {
     return newTag
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tag`
+  async remove(uid: string, id: number) {
+    const [oldTag] = await sql`select * from tags where id = ${id}`
+    if (!oldTag) throw new NotFoundException()
+    if (uid !== oldTag.creator) throw new ForbiddenException()
+    await sql`delete from tags where id = ${id}`
   }
 }

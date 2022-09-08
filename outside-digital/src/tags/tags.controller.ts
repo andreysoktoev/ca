@@ -31,7 +31,7 @@ export class TagsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tags.remove(+id)
+  remove(@Req() req, @Param('id') id: string) {
+    return this.tags.remove(req.user.uid, +id)
   }
 }
