@@ -15,8 +15,27 @@ export class TagsService {
     }
   }
 
-  findAll() {
-    return `This action returns all tags`
+  async findAll(query) {
+    const sortByOrder = query?.sortByOrder
+    const sortByName = query?.sortByName
+    const length = query?.length
+    const offset = query?.offset
+    const tags = await sql`
+      select * from user_tags
+      order by
+        case when ${sortByOrder === ''} then sort_order end,
+        case when ${sortByName === ''} then name end
+      limit case when ${length > 0} then ${length}::bigint end
+      offset case when ${offset > 0} then ${offset}::bigint end
+    `
+    return {
+      data: tags,
+      meta: {
+        offset,
+        length,
+        quantity: tags.length
+      }
+    }
   }
 
   async findOne(id: number): Promise<Tag> {

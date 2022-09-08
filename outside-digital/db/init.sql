@@ -23,3 +23,29 @@ create table tags (
   name varchar(40) unique not null,
   sort_order int not null default 0
 );
+
+insert into users (email, password, nickname) values
+('a@example.com', 'a', 'a'),
+('b@example.com', 'b', 'b'),
+('c@example.com', 'c', 'c');
+
+insert into tags (creator, name, sort_order) values
+((select uid from users where nickname = 'a'), 'one', 9),
+((select uid from users where nickname = 'a'), 'two', 8),
+((select uid from users where nickname = 'a'), 'three', 7),
+((select uid from users where nickname = 'b'), 'four', 6),
+((select uid from users where nickname = 'b'), 'five', 5),
+((select uid from users where nickname = 'b'), 'six', 4),
+((select uid from users where nickname = 'c'), 'seven', 3),
+((select uid from users where nickname = 'c'), 'eight', 2),
+((select uid from users where nickname = 'c'), 'nine', 1);
+
+drop view if exists user_tags cascade;
+
+create view user_tags as
+select
+  jsonb_build_object('nickname', nickname, 'uid', uid) creator,
+  name,
+  sort_order
+from tags
+left join users on uid = creator;

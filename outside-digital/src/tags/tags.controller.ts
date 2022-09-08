@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '../auth/auth.guard.js'
 import { CreateTagDto } from './dto/create-tag.dto.js'
 import { UpdateTagDto } from './dto/update-tag.dto.js'
@@ -16,8 +16,8 @@ export class TagsController {
   }
 
   @Get()
-  findAll() {
-    return this.tags.findAll()
+  findAll(@Query() query) {
+    return this.tags.findAll(query)
   }
 
   @Get(':id')
