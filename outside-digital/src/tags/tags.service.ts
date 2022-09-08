@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import { sql } from '../db/sql.js'
 import { CreateTagDto } from './dto/create-tag.dto.js'
 import { UpdateTagDto } from './dto/update-tag.dto.js'
@@ -24,8 +24,12 @@ export class TagsService {
     return tag
   }
 
-  update(id: number, updateTagDto: UpdateTagDto) {
-    return `This action updates a #${id} tag`
+  async update(uid: string, id: number, dto: UpdateTagDto): Promise<Tag> {
+    const [oldTag] = await sql`select * from tags where id = ${id}`
+    if (!oldTag) throw new NotFoundException()
+    if (uid !== oldTag.creator) throw new ForbiddenException()
+    const [newTag] = await sql`update tags set ${sql(dto)} where id = ${id} returning *`
+    return newTag
   }
 
   remove(id: number) {

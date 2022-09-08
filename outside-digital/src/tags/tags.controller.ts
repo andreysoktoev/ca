@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '../auth/auth.guard.js'
 import { CreateTagDto } from './dto/create-tag.dto.js'
 import { UpdateTagDto } from './dto/update-tag.dto.js'
@@ -25,9 +25,9 @@ export class TagsController {
     return this.tags.findOne(+id)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
-    return this.tags.update(+id, updateTagDto)
+  @Put(':id')
+  update(@Req() req, @Param('id') id: string, @Body() dto: UpdateTagDto): Promise<Tag> {
+    return this.tags.update(req.user.uid, +id, dto)
   }
 
   @Delete(':id')
