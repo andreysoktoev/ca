@@ -11,12 +11,12 @@ export class AuthService {
   constructor(@Inject(CACHE_MANAGER) private cache: Cache) {}
 
   async createToken(uid: string): Promise<Token> {
-    const TOKEN_TTL = 1000 * 60 * 60 * 24
-    const token = createSigner({ expiresIn: TOKEN_TTL, key: process.env.SECRET })({ uid })
+    const { TOKEN_TTL } = process.env
+    const token = createSigner({ expiresIn: +TOKEN_TTL, key: process.env.SECRET })({ uid })
     await this.cache.set(uid, token, { ttl: 1800 })
     return {
       token,
-      expire: TOKEN_TTL
+      expire: +TOKEN_TTL
     }
   }
 

@@ -16,7 +16,7 @@ export class UsersService {
 
   async get(uid: string) {
     try {
-      const [user] = await sql`select email, nickname, tags from user_tag where uid = ${uid}`
+      const [user] = await sql`select email, nickname, tags from users_view where uid = ${uid}`
       return user
     } catch (e) {
       throw new NotFoundException()
