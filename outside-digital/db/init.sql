@@ -40,12 +40,31 @@ insert into tags (creator, name, sort_order) values
 ((select uid from users where nickname = 'c'), 'eight', 2),
 ((select uid from users where nickname = 'c'), 'nine', 1);
 
-drop view if exists user_tags cascade;
+drop view if exists
+  tag_user,
+  user_tag
+cascade;
 
-create view user_tags as
+create view tag_user as
 select
   jsonb_build_object('nickname', nickname, 'uid', uid) creator,
   name,
   sort_order
 from tags
 left join users on uid = creator;
+
+create view user_tag as
+select
+  uid,
+  email,
+  nickname,
+  tags
+from users
+left join (
+  select
+    creator,
+    jsonb_agg(jsonb_build_object('id', id, 'name', name, 'sort_order', sort_order)) tags
+  from tags
+  group by creator
+) t
+on creator = uid;

@@ -14,9 +14,9 @@ export class UsersService {
     await sql`delete from users where uid = ${uid}`
   }
 
-  async get(req: any): Promise<User> {
+  async get(uid: string) {
     try {
-      const [user] = await sql`select uid, email, nickname from users where uid = ${req.user.uid}`
+      const [user] = await sql`select email, nickname, tags from user_tag where uid = ${uid}`
       return user
     } catch (e) {
       throw new NotFoundException()

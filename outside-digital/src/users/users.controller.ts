@@ -15,8 +15,8 @@ export class UsersController {
   }
 
   @Get()
-  get(@Req() req): Promise<User> {
-    return this.users.get(req)
+  get(@Req() req) {
+    return this.users.get(req.user.uid)
   }
 
   @Put()
