@@ -1,26 +1,31 @@
-import { Body, Controller, Delete, Get, Put, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Post, Put, Req, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '../auth/auth.guard.js'
 import { UpdateUserDto } from './dto/create-user.dto.js'
 import { User } from './entities/user.entity.js'
 import { UsersService } from './users.service.js'
 
-@Controller('user')
+@Controller()
 @UseGuards(AuthGuard)
 export class UsersController {
   constructor(private readonly users: UsersService) {}
 
-  @Delete()
+  @Delete('user')
   delete(@Req() req) {
     return this.users.delete(req)
   }
 
-  @Get()
+  @Get('user')
   get(@Req() req) {
     return this.users.get(req.user.uid)
   }
 
-  @Put()
+  @Put('user')
   update(@Body() data: UpdateUserDto, @Req() req): Promise<User> {
     return this.users.update(data, req)
+  }
+
+  @Post('user/tag')
+  addTags(@Req() req, @Body('tags') tags: number[]) {
+    return this.users.addTags(req.user.uid, tags)
   }
 }

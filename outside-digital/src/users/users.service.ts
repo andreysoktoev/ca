@@ -1,4 +1,11 @@
-import { CACHE_MANAGER, ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  CACHE_MANAGER,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common'
 import { Cache } from 'cache-manager'
 import { sql } from '../db/sql.js'
 import { UpdateUserDto } from './dto/create-user.dto.js'
@@ -30,5 +37,15 @@ export class UsersService {
     } catch (e) {
       throw new ConflictException(e.message)
     }
+  }
+
+  async addTags(uid: string, tags: number[]) {
+    const tmp = await sql`select * from tags where id = any (${tags})`
+    if (tmp.length < tags.length) throw new BadRequestException()
+    await Promise.all(
+      tags.map(async tid => await sql`insert into user_tags values (${uid}, ${tid}) on conflict do nothing`)
+    )
+    const [userTags] = await sql`select tags from users_view where uid = ${uid}`
+    return userTags
   }
 }

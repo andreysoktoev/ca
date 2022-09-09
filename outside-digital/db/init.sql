@@ -27,7 +27,8 @@ create table tags (
 
 create table user_tags (
   uid uuid not null references users on delete cascade on update cascade,
-  tid int not null references tags on delete cascade on update cascade
+  tid int not null references tags on delete cascade on update cascade,
+  unique (uid, tid)
 );
 
 insert into users values
