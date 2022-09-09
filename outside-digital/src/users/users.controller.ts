@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Put, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '../auth/auth.guard.js'
 import { UpdateUserDto } from './dto/create-user.dto.js'
 import { User } from './entities/user.entity.js'
@@ -27,5 +27,10 @@ export class UsersController {
   @Post('user/tag')
   addTags(@Req() req, @Body('tags') tags: number[]) {
     return this.users.addTags(req.user.uid, tags)
+  }
+
+  @Delete('user/tag/:id')
+  removeTag(@Req() req, @Param('id') id: string) {
+    return this.users.removeTag(req.user.uid, +id)
   }
 }

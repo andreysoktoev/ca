@@ -48,4 +48,10 @@ export class UsersService {
     const [userTags] = await sql`select tags from users_view where uid = ${uid}`
     return userTags
   }
+
+  async removeTag(uid: string, id: number) {
+    await sql`delete from user_tags where uid = ${uid} and tid = ${id}`
+    const [tags] = await sql`select tags from users_view where uid = ${uid}`
+    return tags
+  }
 }
