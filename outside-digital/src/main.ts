@@ -11,6 +11,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter()
   )
+  app.enableCors()
   app.useGlobalPipes(new ValidationPipe())
   await app.listen(3000, '0.0.0.0')
 }

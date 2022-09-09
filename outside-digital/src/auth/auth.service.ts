@@ -22,8 +22,16 @@ export class AuthService {
 
   async signIn(data: Credentials): Promise<Token> {
     const { email, password } = data
-    const [user] = await sql`select * from users where email = ${email}`
-    if (!user || password !== user.password) throw new UnauthorizedException('Invalid credentials')
+    const [user] = await sql`
+      select
+        uid,
+        (
+          password <> crypt(${password}, password)
+        ) invalid_password
+      from users
+      where email = ${email}
+    `
+    if (!user || user.invalid_password) throw new UnauthorizedException('Invalid credentials')
     return this.createToken(user.uid)
   }
 
@@ -39,10 +47,18 @@ export class AuthService {
   }
 
   async signUp(data: CreateUserDto): Promise<Token> {
-    const { email, nickname } = data
+    const { email, password, nickname } = data
     const [userExists] = await sql`select * from users where email = ${email} or nickname = ${nickname}`
     if (userExists) throw new ConflictException('User already exists')
-    const [{ uid }] = await sql`insert into users ${sql(data)} returning uid`
+    const [{ uid }] = await sql`
+      insert into users (email, password, nickname)
+      values (
+        ${email},
+        crypt(${password}, gen_salt('md5')),
+        ${nickname}
+      )
+      returning uid
+    `
     return this.createToken(uid)
   }
 }

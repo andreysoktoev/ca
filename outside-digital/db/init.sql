@@ -32,9 +32,9 @@ create table user_tags (
 );
 
 insert into users values
-('f61749ac-6b18-41b5-8a03-35d9f0041da4', 'a@example.com', 'a', 'a'),
-('f943ce72-e730-44ff-ab3a-f67d68b8e1cc', 'b@example.com', 'b', 'b'),
-('0537137f-bb45-41bf-81e8-347900c11497', 'c@example.com', 'c', 'c');
+('f61749ac-6b18-41b5-8a03-35d9f0041da4', 'a@example.com', crypt('a', gen_salt('md5')), 'a'),
+('f943ce72-e730-44ff-ab3a-f67d68b8e1cc', 'b@example.com', crypt('b', gen_salt('md5')), 'b'),
+('0537137f-bb45-41bf-81e8-347900c11497', 'c@example.com', crypt('c', gen_salt('md5')), 'c');
 
 insert into tags (creator, name, sort_order) values
 ((select uid from users where nickname = 'a'), 'one', 9),
