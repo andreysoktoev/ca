@@ -54,4 +54,9 @@ export class UsersService {
     const [tags] = await sql`select tags from users_view where uid = ${uid}`
     return tags
   }
+
+  async getMyTags(uid: string) {
+    const tags = await sql`select id, name, sort_order from tags where creator = ${uid}`
+    return { tags }
+  }
 }

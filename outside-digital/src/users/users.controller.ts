@@ -33,4 +33,9 @@ export class UsersController {
   removeTag(@Req() req, @Param('id') id: string) {
     return this.users.removeTag(req.user.uid, +id)
   }
+
+  @Get('user/tag/my')
+  getMyTags(@Req() req) {
+    return this.users.getMyTags(req.user.uid)
+  }
 }
