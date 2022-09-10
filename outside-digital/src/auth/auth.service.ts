@@ -1,7 +1,7 @@
 import { CACHE_MANAGER, ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common'
 import { Cache } from 'cache-manager'
 import 'dotenv/config'
-import { createDecoder, createSigner } from 'fast-jwt'
+import { createSigner } from 'fast-jwt'
 import { sql } from '../db/sql.js'
 import { CreateUserDto, Credentials } from '../users/dto/create-user.dto.js'
 import { Token } from './entities/auth.entity.js'
@@ -20,6 +20,10 @@ export class AuthService {
     }
   }
 
+  async refreshToken(uid: string): Promise<Token> {
+    return await this.createToken(uid)
+  }
+
   async signIn(data: Credentials): Promise<Token> {
     const { email, password } = data
     const [user] = await sql`
@@ -35,15 +39,8 @@ export class AuthService {
     return this.createToken(user.uid)
   }
 
-  async signOut(authorization: string) {
-    try {
-      const token = authorization.split(' ')[1]
-      const { uid } = createDecoder()(token)
-      await this.cache.del(uid)
-      return true
-    } catch (e) {
-      throw new UnauthorizedException()
-    }
+  async signOut(uid: string) {
+    await this.cache.del(uid)
   }
 
   async signUp(data: CreateUserDto): Promise<Token> {
