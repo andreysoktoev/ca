@@ -20,10 +20,6 @@ export class AuthService {
     }
   }
 
-  async refreshToken(uid: string): Promise<Token> {
-    return await this.createToken(uid)
-  }
-
   async signIn(data: Credentials): Promise<Token> {
     const { email, password } = data
     const [user] = await sql`

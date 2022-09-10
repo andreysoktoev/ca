@@ -27,6 +27,6 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Post('refresh-token')
   refreshToken(@Req() req): Promise<Token> {
-    return this.auth.refreshToken(req.user.uid)
+    return this.auth.createToken(req.user.uid)
   }
 }
