@@ -58,7 +58,7 @@ const schema = `
   type Query {
     getAllBooks: [Book]
     getAllUsers: [User]
-    getBook: Book
+    getBook(id: Int!): Book
     getUser(id: Int!): User
   }
 
