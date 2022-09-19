@@ -14,13 +14,13 @@ const schema = `
     createdAt: Float
   }
 
-  input BookCreate {
+  input BookAdd {
     title: String!
     author: String!
   }
 
   input BookUpdate {
-    id: Int
+    id: Int!
     title: String
     author: String
   }
@@ -59,11 +59,11 @@ const schema = `
   }
 
   type Mutation {
-    createBook(data: BookCreate!): Book
-    createUser(data: UserCreate!): User
+    addBook(data: BookAdd!): Book
+    addUser(data: UserCreate!): User
     deleteBook(id: Int!): Boolean
     deleteUser(id: Int!): Boolean
-    updateBook(data: BookCreate!): Book
+    updateBook(data: BookUpdate!): Book
     updateUser(data: UserUpdate!): User
   }
 `
@@ -82,11 +82,11 @@ const resolvers = {
     },
   },
   Mutation: {
-    createBook: async (_, { data }) => {
+    addBook: async (_, { data }) => {
       const [book] = await sql`insert into books ${sql(data)} returning *`
       return book
     },
-    createUser: async (_, { data }) => {
+    addUser: async (_, { data }) => {
       const [user] = await sql`insert into users ${sql(data)} returning *`
       return user
     },
