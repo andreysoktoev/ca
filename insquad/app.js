@@ -15,11 +15,19 @@ const schema = `
     updatedAt: String
   }
 
-  input UserInput {
+  input UserCreate {
     firstName: String!
     lastName: String!
     age: Int!
     isFree: Boolean!
+  }
+
+  input UserUpdate {
+    id: Int!
+    firstName: String
+    lastName: String
+    age: Int
+    isFree: Boolean
   }
 
   type Query {
@@ -28,7 +36,8 @@ const schema = `
   }
 
   type Mutation {
-    createUser(data: UserInput!): User
+    createUser(data: UserCreate!): User
+    updateUser(data: UserUpdate): User
   }
 `
 
@@ -43,6 +52,16 @@ const resolvers = {
   Mutation: {
     createUser: async (_, { data }) => {
       const [user] = await sql`insert into users ${sql(data)} returning *`
+      return user
+    },
+    updateUser: async (_, args) => {
+      const { id, ...data } = args.data
+      const [user] = await sql`
+        update users
+        set ${sql({ ...data, updatedAt: Date.now() })}
+        where id = ${id}
+        returning *
+      `
       return user
     }
   }
