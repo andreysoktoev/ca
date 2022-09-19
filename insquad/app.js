@@ -38,6 +38,7 @@ const schema = `
   type Mutation {
     createUser(data: UserCreate!): User
     updateUser(data: UserUpdate): User
+    deleteUser(id: Int!): Boolean
   }
 `
 
@@ -47,7 +48,7 @@ const resolvers = {
     getUser: async (_, { id }) => {
       const [user] = await sql`select * from users where id = ${id}`
       return user
-    }
+    },
   },
   Mutation: {
     createUser: async (_, { data }) => {
@@ -63,7 +64,11 @@ const resolvers = {
         returning *
       `
       return user
-    }
+    },
+    deleteUser: async (_, { id }) => {
+      await sql`delete from users where id = ${id}`
+      return true
+    },
   }
 }
 
