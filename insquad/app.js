@@ -1,14 +1,10 @@
+import 'dotenv/config'
 import fastify from 'fastify'
 import mercurius from 'mercurius'
 import postgres from 'postgres'
 
 const f = fastify()
-
-const sql = postgres({
-  username: 'postgres',
-  password: 'postgres',
-  database: 'insquad',
-})
+const sql = postgres(process.env.PG_URL)
 
 const schema = `
   type Book {

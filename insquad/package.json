@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
+    "dotenv": "latest",
     "fastify": "latest",
     "mercurius": "latest",
     "postgres": "latest"
