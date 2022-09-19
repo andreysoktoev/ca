@@ -1,0 +1,22 @@
+parserOptions:
+  ecmaVersion: latest
+  sourceType: module
+rules:
+  eol-last:
+    - warn
+    - never
+  object-curly-spacing:
+    - warn
+    - always
+    - arraysInObjects: true
+  quotes:
+    - warn
+    - single
+    - allowTemplateLiterals: true
+      avoidEscape: true
+  semi:
+    - warn
+    - never
+  template-curly-spacing:
+    - warn
+    - never
