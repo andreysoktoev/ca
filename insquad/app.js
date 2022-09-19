@@ -5,14 +5,33 @@ import { sql } from './db/connector.js'
 const f = fastify()
 
 const schema = `
+  type Book {
+    id: Int
+    title: String
+    author: String
+    createdAt: Float
+  }
+
+  input BookCreate {
+    title: String!
+    author: String!
+  }
+
+  input BookUpdate {
+    id: Int
+    title: String
+    author: String
+  }
+
   type User {
     id: Int
     firstName: String
     lastName: String
     age: Int
     isFree: Boolean
-    createdAt: String
-    updatedAt: String
+    createdAt: Float
+    updatedAt: Float
+    books: [Book]
   }
 
   input UserCreate {
@@ -31,29 +50,61 @@ const schema = `
   }
 
   type Query {
-    getUsers: [User]
+    getAllBooks: [Book]
+    getAllUsers: [User]
+    getBook: Book
     getUser(id: Int!): User
   }
 
   type Mutation {
+    createBook(data: BookCreate!): Book
     createUser(data: UserCreate!): User
-    updateUser(data: UserUpdate): User
+    deleteBook(id: Int!): Boolean
     deleteUser(id: Int!): Boolean
+    updateBook(data: BookCreate!): Book
+    updateUser(data: UserUpdate!): User
   }
 `
 
 const resolvers = {
   Query: {
-    getUsers: async () => await sql`table users`,
+    getAllBooks: async () => await sql`table books`,
+    getAllUsers: async () => await sql`table users_view`,
+    getBook: async (_, { id }) => {
+      const [book] = await sql`select * from books where id = ${id}`
+      return book
+    },
     getUser: async (_, { id }) => {
       const [user] = await sql`select * from users where id = ${id}`
       return user
     },
   },
   Mutation: {
+    createBook: async (_, { data }) => {
+      const [book] = await sql`insert into books ${sql(data)} returning *`
+      return book
+    },
     createUser: async (_, { data }) => {
       const [user] = await sql`insert into users ${sql(data)} returning *`
       return user
+    },
+    deleteBook: async (_, { id }) => {
+      await sql`delete from books where id = ${id}`
+      return true
+    },
+    deleteUser: async (_, { id }) => {
+      await sql`delete from users where id = ${id}`
+      return true
+    },
+    updateBook: async (_, args) => {
+      const { id, ...data } = args.data
+      const [book] = await sql`
+        update books
+        set ${sql(data)}
+        where id = ${id}
+        returning *
+      `
+      return book
     },
     updateUser: async (_, args) => {
       const { id, ...data } = args.data
@@ -64,10 +115,6 @@ const resolvers = {
         returning *
       `
       return user
-    },
-    deleteUser: async (_, { id }) => {
-      await sql`delete from users where id = ${id}`
-      return true
     },
   }
 }
