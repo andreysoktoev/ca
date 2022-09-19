@@ -1,8 +1,14 @@
 import fastify from 'fastify'
 import mercurius from 'mercurius'
-import { sql } from './db/connector.js'
+import postgres from 'postgres'
 
 const f = fastify()
+
+const sql = postgres({
+  username: 'postgres',
+  password: 'postgres',
+  database: 'insquad',
+})
 
 const schema = `
   type Book {
@@ -98,22 +104,12 @@ const resolvers = {
     },
     updateBook: async (_, args) => {
       const { id, ...data } = args.data
-      const [book] = await sql`
-        update books
-        set ${sql(data)}
-        where id = ${id}
-        returning *
-      `
+      const [book] = await sql`update books set ${sql(data)} where id = ${id} returning *`
       return book
     },
     updateUser: async (_, args) => {
       const { id, ...data } = args.data
-      const [user] = await sql`
-        update users
-        set ${sql({ ...data, updatedAt: Date.now() })}
-        where id = ${id}
-        returning *
-      `
+      const [user] = await sql`update users set ${sql({ ...data, updatedAt: Date.now() })} where id = ${id} returning *`
       return user
     },
   }
@@ -125,4 +121,4 @@ f.register(mercurius, {
   graphiql: true,
 })
 
-f.listen({ port: 3000 })
+f.listen({ host: '0.0.0.0', port: 3000 })
