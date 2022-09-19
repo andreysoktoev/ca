@@ -24,6 +24,7 @@ const schema = `
 
   type Query {
     getUsers: [User]
+    getUser(id: Int!): User
   }
 
   type Mutation {
@@ -33,7 +34,11 @@ const schema = `
 
 const resolvers = {
   Query: {
-    getUsers: async () => await sql`table users`
+    getUsers: async () => await sql`table users`,
+    getUser: async (_, { id }) => {
+      const [user] = await sql`select * from users where id = ${id}`
+      return user
+    }
   },
   Mutation: {
     createUser: async (_, { data }) => {
