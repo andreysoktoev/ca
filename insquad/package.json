@@ -1,7 +1,9 @@
 {
   "type": "module",
   "dependencies": {
-    "fastify": "latest"
+    "fastify": "latest",
+    "mercurius": "latest",
+    "postgres": "latest"
   },
   "devDependencies": {
     "eslint": "latest",
