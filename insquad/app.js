@@ -60,9 +60,11 @@ const schema = `
 
   type Mutation {
     addBook(data: BookAdd!): Book
+    addBooksToUser(id: Int!, books: [Int!]): User
     addUser(data: UserCreate!): User
     deleteBook(id: Int!): Boolean
     deleteUser(id: Int!): Boolean
+    removeBooksFromUser(id: Int!, books: [Int!]): User
     updateBook(data: BookUpdate!): Book
     updateUser(data: UserUpdate!): User
   }
@@ -77,7 +79,7 @@ const resolvers = {
       return book
     },
     getUser: async (_, { id }) => {
-      const [user] = await sql`select * from users where id = ${id}`
+      const [user] = await sql`select * from users_view where id = ${id}`
       return user
     },
   },
@@ -85,6 +87,12 @@ const resolvers = {
     addBook: async (_, { data }) => {
       const [book] = await sql`insert into books ${sql(data)} returning *`
       return book
+    },
+    addBooksToUser: async (_, { id: uid, books }) => {
+      books = books.map(bid => ({ uid, bid }))
+      await sql`insert into readers ${sql(books)}`
+      const [user] = await sql`select * from users_view where id = ${uid}`
+      return user
     },
     addUser: async (_, { data }) => {
       const [user] = await sql`insert into users ${sql(data)} returning *`
@@ -97,6 +105,11 @@ const resolvers = {
     deleteUser: async (_, { id }) => {
       await sql`delete from users where id = ${id}`
       return true
+    },
+    removeBooksFromUser: async (_, { id, books }) => {
+      await sql`delete from readers where uid = ${id} and bid = any (${books})`
+      const [user] = await sql`select * from users_view where id = ${id}`
+      return user
     },
     updateBook: async (_, args) => {
       const { id, ...data } = args.data
